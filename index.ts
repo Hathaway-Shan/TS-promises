@@ -59,8 +59,27 @@ const tap1 = <A>(f: (a: A) => void): ((a: A) => A) => {
  * work.
  */
 export const eatFood = (foods: ReadonlyArray<Food>): Promise<Belly> => {
-  return Promise.resolve({ nutrients: 0 });
+  return foods.reduce((previous: Promise<Belly>, current: Food) => {
+    return previous.then((previousBelly) => {
+      return gobbleFood(current, previousBelly);
+    });
+  }, Promise.resolve({ nutrients: 0 }));
 };
+
+//use this to guide your reduce function
+// const sequence = (strings: Array<string>): Promise<string> => {
+//   return strings.reduce(
+//     (acc: Promise<string>, s: string) => {
+//       return acc.then(accString => {
+//         return accString + ' ' + s
+//       })
+//     },
+//     Promise.resolve('start')
+//   )
+// }
+
+// sequence(['foo', 'bar', 'baz'])
+//   .then(allTogether => console.log(allTogether))
 
 /**
  * This is one of the functions you'll need to implement to make your tests
@@ -111,17 +130,3 @@ if (path.basename(__filename) == process.argv[0]) {
     .then(eatFood)
     .then(tap1(() => console.log("All done!")));
 }
-
-// const sequence = (strings: Array<string>): Promise<string> => {
-//   return strings.reduce(
-//     (acc: Promise<string>, s: string) => {
-//       return acc.then(accString => {
-//         return accString + ' ' + s
-//       })
-//     },
-//     Promise.resolve('start')
-//   )
-// }
-
-// sequence(['foo', 'bar', 'baz'])
-//   .then(allTogether => console.log(allTogether))
